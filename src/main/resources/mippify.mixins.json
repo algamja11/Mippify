@@ -1,8 +1,9 @@
 {
 	"required": true,
 	"package": "com.gamja.mippify.mixin",
-	"compatibilityLevel": "JAVA_25",
+	"compatibilityLevel": "JAVA_21",
 	"mixins": [
+      "MixinMinecraft",
       "MixinMipGenerator"
 	],
 	"injectors": {
