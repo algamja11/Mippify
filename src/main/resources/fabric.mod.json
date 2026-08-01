@@ -1,0 +1,26 @@
+{
+	"schemaVersion": 1,
+	"id": "mippify",
+	"version": "${version}",
+	"name": "Mippify",
+	"description": "Smooth mipmaps by adjusting alpha cutout.",
+	"authors": [
+		"Algamja11"
+	],
+	"contact": {
+	},
+	"icon": "assets/mippify/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"com.gamja.mippify.Mippify"
+		]
+	},
+	"mixins": [
+		"mippify.mixins.json"
+	],
+	"depends": {
+		"fabricloader": "*",
+		"minecraft": "*"
+	}
+}
