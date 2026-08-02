@@ -3,7 +3,7 @@
 	"id": "mippify",
 	"version": "${version}",
 	"name": "Mippify",
-	"description": "Smooth mipmaps by adjusting alpha cutout.",
+	"description": "Configurable mipmaps.",
 	"authors": [
 		"Algamja11"
 	],

@@ -12,8 +12,8 @@ import java.nio.charset.StandardCharsets;
 import net.minecraft.client.Minecraft;
 
 public class MippifyConfig {
-    public boolean fixMipGeneration = true;
-    public int mipBlurSize = 1;
+    public boolean enableMod = true;
+    public boolean smoothing = true;
 
     private File configFile;
 
@@ -26,8 +26,8 @@ public class MippifyConfig {
                 while ((curLine = in.readLine()) != null) {
                     String[] kv = curLine.split(":", 2);
                     switch (kv[0]) {
-                        case "Fix Mipmap Generation" -> fixMipGeneration = Boolean.parseBoolean(kv[1]);
-                        case "Mipmap Blur Size" -> mipBlurSize = Math.min(Math.max(Integer.parseInt(kv[1]), 1), 8);
+                        case "Enable Mod" -> enableMod = Boolean.parseBoolean(kv[1]);
+                        case "Override Filtering" -> smoothing = Boolean.parseBoolean(kv[1]);
                     }
                 }
                 in.close();
@@ -43,8 +43,8 @@ public class MippifyConfig {
         try {
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8.newEncoder())));
 
-            out.println("Fix Mipmap Generation:" + fixMipGeneration);
-            out.println("Mipmap Blur Size:" + mipBlurSize);
+            out.println("Enable Mod:" + enableMod);
+            out.println("Override Filtering:" + smoothing);
 
             out.close();
         }catch (Exception e) {

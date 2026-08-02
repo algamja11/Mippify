@@ -1,5 +1,6 @@
 {
   "mippify.gui.title": "Mippify Settings",
-  "mippify.fixMipGeneration": "Fix Mipmap Generation",
-  "mippify.mipBlurSize": "Mipmap Blur Size"
+  "mippify.unit.pixel": "%s px",
+  "mippify.enableMod": "Enable Mippify",
+  "mippify.smoothing": "Smooth Mipmap"
 }

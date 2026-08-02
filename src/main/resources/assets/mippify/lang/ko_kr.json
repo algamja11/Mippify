@@ -1,5 +1,6 @@
 {
   "mippify.gui.title": "Mippify 설정",
-  "mippify.fixMipGeneration": "밉맵 생성 수정",
-  "mippify.mipBlurSize": "밉맵 블러 강도"
+  "mippify.unit.pixel": "%s 픽셀",
+  "mippify.enableMod": "Mippify 활성화",
+  "mippify.smoothing": "부드러운 밉맵"
 }
