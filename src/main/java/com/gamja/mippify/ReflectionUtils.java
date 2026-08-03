@@ -36,9 +36,9 @@ public class ReflectionUtils {
         }
     }
 
-    public static void trySet(Field field, Object object, Object value) {
+    public static void trySet(Field field, Object target, Object value) {
         try {
-            field.set(object, value);
+            field.set(target, value);
         } catch (Exception e) {
             String name = field == null ? "(unknown)" : field.getName();
             Mippify.LOGGER.error("Failed to get field {}", name, e);

@@ -49,14 +49,16 @@ public class MippifyMipGenerator {
             mipmapStrategy = transparency.hasTransparent() ? MipmapStrategy.CUTOUT : MipmapStrategy.MEAN;
         }
 
-        if (currentMips.length == 1 && !name.getPath().startsWith("item/")) {
-            if (mipmapStrategy != MipmapStrategy.CUTOUT && mipmapStrategy != MipmapStrategy.STRICT_CUTOUT) {
-                if (mipmapStrategy == MipmapStrategy.DARK_CUTOUT) {
-                    TextureUtil.fillEmptyAreasWithDarkColor(currentMips[0]);
+        if (currentMips.length == 1 && !name.getPath().startsWith(ITEM_PREFIX)) {
+            if (config.fastEdge) {
+                if (mipmapStrategy == MipmapStrategy.CUTOUT || mipmapStrategy == MipmapStrategy.STRICT_CUTOUT) {
+                    fixTransparentColor(currentMips[0]);
                 }
             } else {
-                if (config.fastEdge) {
-                    fixTransparentColor(currentMips[0]);
+                if (mipmapStrategy != MipmapStrategy.CUTOUT && mipmapStrategy != MipmapStrategy.STRICT_CUTOUT) {
+                    if (mipmapStrategy == MipmapStrategy.DARK_CUTOUT) {
+                        TextureUtil.fillEmptyAreasWithDarkColor(currentMips[0]);
+                    }
                 } else {
                     TextureUtil.solidify(currentMips[0]);
                 }
