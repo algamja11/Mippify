@@ -2,5 +2,6 @@
   "mippify.gui.title": "Mippify Settings",
   "mippify.unit.pixel": "%s px",
   "mippify.enableMod": "Enable Mippify",
-  "mippify.smoothing": "Smooth Mipmap"
+  "mippify.smoothing": "Smooth Mipmap",
+  "mippify.fastEdge": "Fast Edge Filtering"
 }

@@ -49,13 +49,19 @@ public class MippifyMipGenerator {
             mipmapStrategy = transparency.hasTransparent() ? MipmapStrategy.CUTOUT : MipmapStrategy.MEAN;
         }
 
+        boolean isCutoutMip = mipmapStrategy == MipmapStrategy.CUTOUT || mipmapStrategy == MipmapStrategy.STRICT_CUTOUT || mipmapStrategy == MipmapStrategy.DARK_CUTOUT;
+        float cutoutRef = mipmapStrategy == MipmapStrategy.STRICT_CUTOUT ? STRICT_ALPHA_CUTOFF : ALPHA_CUTOFF;
+        float originalCoverage = isCutoutMip ? alphaTestCoverage(currentMips[0], cutoutRef, 1.0F) : 0.0F;
+
         if (currentMips.length == 1 && !name.getPath().startsWith(ITEM_PREFIX)) {
-            if (mipmapStrategy != MipmapStrategy.CUTOUT && mipmapStrategy != MipmapStrategy.STRICT_CUTOUT) {
-                if (mipmapStrategy == MipmapStrategy.DARK_CUTOUT) {
-                    TextureUtil.fillEmptyAreasWithDarkColor(currentMips[0]);
+            if (mipmapStrategy == MipmapStrategy.DARK_CUTOUT) {
+                TextureUtil.fillEmptyAreasWithDarkColor(currentMips[0]);
+            } else if (isCutoutMip) {
+                if (config.fastEdge) {
+                    fixTransparentColor(currentMips[0], cutoutRef);
+                } else {
+                    TextureUtil.solidify(currentMips[0]);
                 }
-            } else {
-                TextureUtil.solidify(currentMips[0]);
             }
         }
 
@@ -64,9 +70,6 @@ public class MippifyMipGenerator {
         } else {
             NativeImage[] result = new NativeImage[newMipLevel + 1];
             result[0] = currentMips[0];
-            boolean isCutoutMip = mipmapStrategy == MipmapStrategy.CUTOUT || mipmapStrategy == MipmapStrategy.STRICT_CUTOUT || mipmapStrategy == MipmapStrategy.DARK_CUTOUT;
-            float cutoutRef = mipmapStrategy == MipmapStrategy.STRICT_CUTOUT ? STRICT_ALPHA_CUTOFF : ALPHA_CUTOFF;
-            float originalCoverage = isCutoutMip ? alphaTestCoverage(currentMips[0], cutoutRef, 1.0F) : 0.0F;
 
             for (int level = 1; level <= newMipLevel; ++level) {
                 if (level < currentMips.length) {
@@ -149,5 +152,39 @@ public class MippifyMipGenerator {
         int b = (b1 + b2) / (a1 + a2);
 
         return ARGB.color(a, r, g, b);
+    }
+
+    public void fixTransparentColor(NativeImage image, float cutout) {
+        int alphaCutout = (int)(255.0F * cutout);
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        long pass = 0L;
+        long r = 0L;
+        long g = 0L;
+        long b = 0L;
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                int pixel = image.getPixel(x, y);
+                if (ARGB.alpha(pixel) >= alphaCutout) {
+                    r += ARGB.red(pixel);
+                    g += ARGB.green(pixel);
+                    b += ARGB.blue(pixel);
+                    ++pass;
+                }
+            }
+        }
+
+        if (pass > 0) {
+            int color = ARGB.color(0, (int)(r / pass), (int)(g / pass), (int)(b / pass));
+            for (int x = 0; x < width; ++x) {
+                for (int y = 0; y < height; ++y) {
+                    int pixel = image.getPixel(x, y);
+                    if (ARGB.alpha(pixel) <= alphaCutout) {
+                        image.setPixel(x, y, color);
+                    }
+                }
+            }
+        }
     }
 }

@@ -10,6 +10,7 @@ public class ConfigHandler {
     public enum Action {
         ENABLE_MOD("mippify.enableMod", 0),
         SMOOTHING("mippify.smoothing", 0),
+        FAST_EDGE("mippify.fastEdge", 0)
         ;
 
         private final String key;
@@ -45,6 +46,7 @@ public class ConfigHandler {
         switch (action) {
             case ENABLE_MOD -> config.enableMod = !config.enableMod;
             case SMOOTHING -> config.smoothing = !config.smoothing;
+            case FAST_EDGE -> config.fastEdge = !config.fastEdge;
         }
     }
 
@@ -60,6 +62,7 @@ public class ConfigHandler {
         return switch (action) {
             case ENABLE_MOD -> config.enableMod;
             case SMOOTHING -> config.smoothing;
+            case FAST_EDGE -> config.fastEdge;
             default -> false;
         };
     }

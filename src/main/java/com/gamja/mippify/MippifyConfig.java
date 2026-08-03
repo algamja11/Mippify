@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 public class MippifyConfig {
     public boolean enableMod = true;
     public boolean smoothing = true;
+    public boolean fastEdge = true;
 
     private File configFile;
 
@@ -27,7 +28,8 @@ public class MippifyConfig {
                     String[] kv = curLine.split(":", 2);
                     switch (kv[0]) {
                         case "Enable Mod" -> enableMod = Boolean.parseBoolean(kv[1]);
-                        case "Override Filtering" -> smoothing = Boolean.parseBoolean(kv[1]);
+                        case "Smoothing" -> smoothing = Boolean.parseBoolean(kv[1]);
+                        case "Fast Edge" -> fastEdge = Boolean.parseBoolean(kv[1]);
                     }
                 }
                 in.close();
@@ -44,7 +46,8 @@ public class MippifyConfig {
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8.newEncoder())));
 
             out.println("Enable Mod:" + enableMod);
-            out.println("Override Filtering:" + smoothing);
+            out.println("Smoothing:" + smoothing);
+            out.println("Fast Edge:" + fastEdge);
 
             out.close();
         }catch (Exception e) {
