@@ -4,7 +4,8 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
       "MixinMinecraft",
-      "MixinMipGenerator"
+      "MixinMipGenerator",
+      "MixinPipelines"
 	],
 	"injectors": {
 		"defaultRequire": 1

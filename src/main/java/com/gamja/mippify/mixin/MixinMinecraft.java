@@ -13,10 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinMinecraft {
     @Inject(method = "tick", at = @At("RETURN"))
     private void mippify$tick(CallbackInfo ci) {
-        if (Minecraft.getInstance().gui.screen() == null){
-            if (InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_M)) {
-                Minecraft.getInstance().gui.setScreen(new GuiMippifyConfig(null));
-            }
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.gui.screen() == null && InputConstants.isKeyDown(minecraft.getWindow(), GLFW.GLFW_KEY_M)){
+            minecraft.gui.setScreen(new GuiMippifyConfig(null));
         }
     }
 }

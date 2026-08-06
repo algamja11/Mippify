@@ -14,15 +14,21 @@ public class ConfigHandler {
         ;
 
         private final String key;
+        private final String tooltip;
         private final int type;
 
         Action(String key, int type) {
             this.key = key;
+            this.tooltip = key + ".tooltip";
             this.type = type;
         }
 
         public String key() {
             return key;
+        }
+
+        public String tooltip() {
+            return tooltip;
         }
 
         public int type() {

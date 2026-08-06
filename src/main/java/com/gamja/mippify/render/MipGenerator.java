@@ -1,5 +1,7 @@
-package com.gamja.mippify;
+package com.gamja.mippify.render;
 
+import com.gamja.mippify.Mippify;
+import com.gamja.mippify.ReflectionUtils;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.platform.Transparency;
@@ -10,55 +12,51 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 
 @SuppressWarnings("ConstantConditions")
-public class MippifyMipGenerator {
-    private final MippifyConfig config;
+public class MipGenerator {
+    private static final Method ALPHA_TEST_COVERAGE;
+    private static final Method SCALE_ALPHA_TO_COVERAGE;
+    private static final Method DARKENED_ALPHA_BLEND;
 
-    private final Method alphaTestCoverage;
-    private final Method scaleAlphaToCoverage;
-    private final Method darkenedAlphaBlend;
+    private static final String ITEM_PREFIX;
+    private static final float ALPHA_CUTOFF;
+    private static final float STRICT_ALPHA_CUTOFF;
 
-    private final String ITEM_PREFIX;
-    private final float ALPHA_CUTOFF;
-    private final float STRICT_ALPHA_CUTOFF;
+    private MipGenerator() {
+    }
 
-    public MippifyMipGenerator() {
+    static {
         Class<?> mipGenerator = MipmapGenerator.class;
 
-        alphaTestCoverage = ReflectionUtils.tryGetMethod(mipGenerator, "alphaTestCoverage", NativeImage.class, float.class, float.class);
-        scaleAlphaToCoverage = ReflectionUtils.tryGetMethod(mipGenerator, "scaleAlphaToCoverage", NativeImage.class, float.class, float.class, float.class);
-        darkenedAlphaBlend = ReflectionUtils.tryGetMethod(mipGenerator, "darkenedAlphaBlend", int.class, int.class, int.class, int.class);
+        ALPHA_TEST_COVERAGE = ReflectionUtils.tryGetMethod(mipGenerator, "alphaTestCoverage", NativeImage.class, float.class, float.class);
+        SCALE_ALPHA_TO_COVERAGE = ReflectionUtils.tryGetMethod(mipGenerator, "scaleAlphaToCoverage", NativeImage.class, float.class, float.class, float.class);
+        DARKENED_ALPHA_BLEND = ReflectionUtils.tryGetMethod(mipGenerator, "darkenedAlphaBlend", int.class, int.class, int.class, int.class);
 
         ITEM_PREFIX = (String) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(mipGenerator, "ITEM_PREFIX"), null);
         ALPHA_CUTOFF = (float) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(mipGenerator, "ALPHA_CUTOFF"), null);
         STRICT_ALPHA_CUTOFF = (float) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(mipGenerator, "STRICT_ALPHA_CUTOFF"), null);
-
-
-        config = Mippify.config();
     }
 
-    private float alphaTestCoverage(final NativeImage image, final float alphaRef, final float alphaScale) {
-        return (float) ReflectionUtils.tryInvoke(alphaTestCoverage, null, image, alphaRef, alphaScale);
+    private static float alphaTestCoverage(final NativeImage image, final float alphaRef, final float alphaScale) {
+        return (float) ReflectionUtils.tryInvoke(ALPHA_TEST_COVERAGE, null, image, alphaRef, alphaScale);
     }
 
-    private void scaleAlphaToCoverage(final NativeImage image, final float desiredCoverage, final float alphaRef, final float alphaCutoffBias) {
-        ReflectionUtils.tryInvoke(scaleAlphaToCoverage, null, image, desiredCoverage, alphaRef, alphaCutoffBias);
+    private static void scaleAlphaToCoverage(final NativeImage image, final float desiredCoverage, final float alphaRef, final float alphaCutoffBias) {
+        ReflectionUtils.tryInvoke(SCALE_ALPHA_TO_COVERAGE, null, image, desiredCoverage, alphaRef, alphaCutoffBias);
     }
 
-    public NativeImage[] generateMipLevels(Identifier name, NativeImage[] currentMips, int newMipLevel, MipmapStrategy mipmapStrategy, float alphaCutoffBias, Transparency transparency) {
+    public static NativeImage[] generateMipLevels(Identifier name, NativeImage[] currentMips, int newMipLevel, MipmapStrategy mipmapStrategy, float alphaCutoffBias, Transparency transparency) {
         if (mipmapStrategy == MipmapStrategy.AUTO) {
             mipmapStrategy = transparency.hasTransparent() ? MipmapStrategy.CUTOUT : MipmapStrategy.MEAN;
         }
 
-        if (currentMips.length == 1 && !name.getPath().startsWith(ITEM_PREFIX)) {
-            if (config.fastEdge) {
-                if (mipmapStrategy == MipmapStrategy.CUTOUT || mipmapStrategy == MipmapStrategy.STRICT_CUTOUT) {
-                    fixTransparentColor(currentMips[0]);
-                }
+        boolean isCutoutMip = mipmapStrategy == MipmapStrategy.CUTOUT || mipmapStrategy == MipmapStrategy.STRICT_CUTOUT || mipmapStrategy == MipmapStrategy.DARK_CUTOUT;
+
+        if (currentMips.length == 1 && !name.getPath().startsWith(ITEM_PREFIX) && isCutoutMip) {
+            if (mipmapStrategy == MipmapStrategy.DARK_CUTOUT) {
+                TextureUtil.fillEmptyAreasWithDarkColor(currentMips[0]);
             } else {
-                if (mipmapStrategy != MipmapStrategy.CUTOUT && mipmapStrategy != MipmapStrategy.STRICT_CUTOUT) {
-                    if (mipmapStrategy == MipmapStrategy.DARK_CUTOUT) {
-                        TextureUtil.fillEmptyAreasWithDarkColor(currentMips[0]);
-                    }
+                if (Mippify.config().fastEdge) {
+                    fixTransparentColor(currentMips[0]);
                 } else {
                     TextureUtil.solidify(currentMips[0]);
                 }
@@ -70,7 +68,6 @@ public class MippifyMipGenerator {
         } else {
             NativeImage[] result = new NativeImage[newMipLevel + 1];
             result[0] = currentMips[0];
-            boolean isCutoutMip = mipmapStrategy == MipmapStrategy.CUTOUT || mipmapStrategy == MipmapStrategy.STRICT_CUTOUT || mipmapStrategy == MipmapStrategy.DARK_CUTOUT;
             float cutoutRef = mipmapStrategy == MipmapStrategy.STRICT_CUTOUT ? STRICT_ALPHA_CUTOFF : ALPHA_CUTOFF;
             float originalCoverage = isCutoutMip ? alphaTestCoverage(currentMips[0], cutoutRef, 1.0F) : 0.0F;
 
@@ -91,7 +88,7 @@ public class MippifyMipGenerator {
                             int color4 = lastData.getPixel(x * 2 + 1, y * 2 + 1);
 
                             int color;
-                            if (config.smoothing) {
+                            if (Mippify.config().smoothing) {
                                 color = alphaBlend(color1, color2, color3, color4);
                             } else {
                                 if (mipmapStrategy == MipmapStrategy.DARK_CUTOUT) {
@@ -108,7 +105,7 @@ public class MippifyMipGenerator {
                     result[level] = data;
                 }
 
-                if (isCutoutMip && !config.smoothing) {
+                if (isCutoutMip && !Mippify.config().smoothing) {
                     scaleAlphaToCoverage(result[level], originalCoverage, cutoutRef, alphaCutoffBias);
                 }
             }
@@ -117,17 +114,17 @@ public class MippifyMipGenerator {
         }
     }
 
-    private int darkenedAlphaBlend(final int color1, final int color2, final int color3, final int color4) {
-        return (int) ReflectionUtils.tryInvoke(darkenedAlphaBlend, null, color1, color2, color3, color4);
+    private static int darkenedAlphaBlend(final int color1, final int color2, final int color3, final int color4) {
+        return (int) ReflectionUtils.tryInvoke(DARKENED_ALPHA_BLEND, null, color1, color2, color3, color4);
     }
 
-    private int alphaBlend(int c1, int c2, int c3, int c4) {
+    private static int alphaBlend(int c1, int c2, int c3, int c4) {
         int cx1 = alphaBlend(c1, c2);
         int cx2 = alphaBlend(c3, c4);
         return alphaBlend(cx1, cx2);
     }
 
-    private int alphaBlend(int c1, int c2) {
+    private static int alphaBlend(int c1, int c2) {
         int a1 = ARGB.alpha(c1);
         int a2 = ARGB.alpha(c2);
         int a = (a1 + a2) / 2;
@@ -157,7 +154,7 @@ public class MippifyMipGenerator {
         return ARGB.color(a, r, g, b);
     }
 
-    public void fixTransparentColor(NativeImage image) {
+    public static void fixTransparentColor(NativeImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
 
