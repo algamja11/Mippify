@@ -4,8 +4,6 @@ import com.gamja.mippify.Mippify;
 import com.gamja.mippify.access.Mappings;
 import com.gamja.mippify.access.ReflectionUtils;
 import com.mojang.blaze3d.pipeline.BlendFunction;
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import java.util.HashMap;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -18,7 +16,6 @@ public class PipelineOverrides {
     public static final RenderPipeline CUTOUT_BLOCK;
     public static final RenderPipeline CUTOUT_TERRAIN;
     public static final RenderPipeline TRANSLUCENT_TERRAIN;
-    public static final RenderPipeline TRANSLUCENT_BLOCK;
 
     public static RenderPipeline get(Identifier path) {
         return PIPELINE_OVERRIDES.get(path);
@@ -55,18 +52,9 @@ public class PipelineOverrides {
         TRANSLUCENT_TERRAIN = register(
                 RenderPipeline.builder(terrainSnippet)
                 .withLocation(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/translucent_terrain"))
-                .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+                .withBlend(BlendFunction.TRANSLUCENT)
                 .withShaderDefine("ALPHA_CUTOUT", 0.01F)
                 .build()
-        );
-
-        TRANSLUCENT_BLOCK = register(
-                RenderPipeline.builder(blockSnippet)
-                        .withLocation(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/translucent_block"))
-                        .withShaderDefine("ALPHA_CUTOUT", 0.01F)
-                        .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-                        .withDepthStencilState(DepthStencilState.DEFAULT)
-                        .build()
         );
     }
 }

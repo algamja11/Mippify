@@ -1,5 +1,5 @@
 plugins {
-	id("net.fabricmc.fabric-loom")
+	id("net.fabricmc.fabric-loom-remap")
 	`maven-publish`
 }
 
@@ -11,7 +11,9 @@ repositories {
 
 dependencies {
 	minecraft("com.mojang:minecraft:${providers.gradleProperty("minecraft_version").get()}")
+    mappings(loom.officialMojangMappings())
 	implementation("net.fabricmc:fabric-loader:${providers.gradleProperty("loader_version").get()}")
+    compileOnly("net.fabricmc:sponge-mixin:0.16.4+mixin.0.8.7")
 }
 
 tasks.processResources {
@@ -24,14 +26,14 @@ tasks.processResources {
 }
 
 tasks.withType<JavaCompile>().configureEach {
-	options.release = 25
+	options.release = 21
 }
 
 java {
 	withSourcesJar()
 
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 

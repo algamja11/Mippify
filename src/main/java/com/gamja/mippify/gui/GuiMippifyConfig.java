@@ -3,7 +3,7 @@ package com.gamja.mippify.gui;
 import com.gamja.mippify.Mippify;
 import com.gamja.mippify.MippifyConfig;
 import java.util.ArrayList;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
@@ -32,7 +32,6 @@ public class GuiMippifyConfig extends Screen {
     @Override
     public void init() {
         configWidgets.clear();
-        layout.removeChildren();
         clearWidgets();
         setupScreen();
         layout.visitWidgets(this::addRenderableWidget);
@@ -49,13 +48,13 @@ public class GuiMippifyConfig extends Screen {
 
     private void setupScreen() {
         layout.addTitleHeader(getTitle(), getFont());
-        layout.addToFooter(new Button.Builder(CommonComponents.GUI_DONE, (_) -> onClose()).size(200, 20).build());
+        layout.addToFooter(new Button.Builder(CommonComponents.GUI_DONE, (button) -> onClose()).size(200, 20).build());
 
         setupConfigs();
     }
 
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        super.extractRenderState(graphics, mouseX, mouseY, delta);
+    public void extractRenderState(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        super.render(graphics, mouseX, mouseY, delta);
 
         for (AbstractWidget widget : configWidgets) {
             if (!widget.isHovered()) continue;
@@ -69,12 +68,12 @@ public class GuiMippifyConfig extends Screen {
             int boxW = 300;
             int boxH = 94;
 
-            TooltipRenderUtil.extractTooltipBackground(graphics, boxX, boxY, boxW, boxH, null);
+            TooltipRenderUtil.renderTooltipBackground(graphics, boxX, boxY, boxW, boxH, null);
 
             Component tooltip = Component.translatable(configWidget.getAction().tooltip());
             int i = 0;
             for (FormattedCharSequence line : minecraft.font.split(tooltip, boxW - 6)) {
-                graphics.text(minecraft.font, line, boxX + 3, boxY + 3 + i * 10, 0xFFDDDDDD);
+                graphics.drawString(minecraft.font, line, boxX + 3, boxY + 3 + i * 10, 0xFFDDDDDD);
                 ++i;
             }
         }
@@ -83,7 +82,7 @@ public class GuiMippifyConfig extends Screen {
     @Override
     public void onClose() {
         super.onClose();
-        minecraft.gui.setScreen(parentGui);
+        minecraft.setScreen(parentGui);
         config.saveAll();
 
         if (anyChanged) {

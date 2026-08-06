@@ -1,9 +1,10 @@
-method.MipmapGenerator.alphaTestCoverage:alphaTestCoverage
-method.MipmapGenerator.scaleAlphaToCoverage:scaleAlphaToCoverage
-method.MipmapGenerator.darkenedAlphaBlend:darkenedAlphaBlend
-field.MipmapGenerator.ITEM_PREFIX:ITEM_PREFIX
-field.MipmapGenerator.ALPHA_CUTOFF:ALPHA_CUTOFF
-field.MipmapGenerator.STRICT_ALPHA_CUTOFF:STRICT_ALPHA_CUTOFF
+method.MipmapGenerator.alphaTestCoverage:method_76765
+method.MipmapGenerator.scaleAlphaToCoverage:method_76766
+method.MipmapGenerator.hasTransparentPixel:method_45804
+method.MipmapGenerator.darkenedAlphaBlend:method_75486
+field.MipmapGenerator.ITEM_PREFIX:field_64234
+field.MipmapGenerator.ALPHA_CUTOFF:field_64074
+field.MipmapGenerator.STRICT_ALPHA_CUTOFF:field_64075
 
-field.RenderPipelines.BLOCK_SNIPPET:BLOCK_SNIPPET
-field.RenderPipelines.TERRAIN_SNIPPET:TERRAIN_SNIPPET
+field.RenderPipelines.BLOCK_SNIPPET:field_64223
+field.RenderPipelines.TERRAIN_SNIPPET:field_56853

@@ -5,7 +5,6 @@ import com.gamja.mippify.access.Mappings;
 import com.gamja.mippify.access.ReflectionUtils;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
-import com.mojang.blaze3d.platform.Transparency;
 import java.lang.reflect.Method;
 import net.minecraft.client.renderer.texture.MipmapGenerator;
 import net.minecraft.client.renderer.texture.MipmapStrategy;
@@ -16,6 +15,7 @@ import net.minecraft.util.ARGB;
 public class MipGenerator {
     private static final Method ALPHA_TEST_COVERAGE;
     private static final Method SCALE_ALPHA_TO_COVERAGE;
+    private static final Method HAS_TRANSPARENT_PIXEL;
     private static final Method DARKENED_ALPHA_BLEND;
 
     private static final String ITEM_PREFIX;
@@ -30,6 +30,7 @@ public class MipGenerator {
 
         ALPHA_TEST_COVERAGE = ReflectionUtils.tryGetMethod(mipGenerator, Mappings.get("method.MipmapGenerator.alphaTestCoverage"), NativeImage.class, float.class, float.class);
         SCALE_ALPHA_TO_COVERAGE = ReflectionUtils.tryGetMethod(mipGenerator, Mappings.get("method.MipmapGenerator.scaleAlphaToCoverage"), NativeImage.class, float.class, float.class, float.class);
+        HAS_TRANSPARENT_PIXEL = ReflectionUtils.tryGetMethod(mipGenerator, Mappings.get("method.MipmapGenerator.hasTransparentPixel"), NativeImage.class);
         DARKENED_ALPHA_BLEND = ReflectionUtils.tryGetMethod(mipGenerator, Mappings.get("method.MipmapGenerator.darkenedAlphaBlend"), int.class, int.class, int.class, int.class);
 
         ITEM_PREFIX = (String) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(mipGenerator, Mappings.get("field.MipmapGenerator.ITEM_PREFIX")), null);
@@ -45,9 +46,9 @@ public class MipGenerator {
         ReflectionUtils.tryInvoke(SCALE_ALPHA_TO_COVERAGE, null, image, desiredCoverage, alphaRef, alphaCutoffBias);
     }
 
-    public static NativeImage[] generateMipLevels(Identifier name, NativeImage[] currentMips, int newMipLevel, MipmapStrategy mipmapStrategy, float alphaCutoffBias, Transparency transparency) {
+    public static NativeImage[] generateMipLevels(Identifier name, NativeImage[] currentMips, int newMipLevel, MipmapStrategy mipmapStrategy, float alphaCutoffBias) {
         if (mipmapStrategy == MipmapStrategy.AUTO) {
-            mipmapStrategy = transparency.hasTransparent() ? MipmapStrategy.CUTOUT : MipmapStrategy.MEAN;
+            mipmapStrategy = hasTransparentPixel(currentMips[0]) ? MipmapStrategy.CUTOUT : MipmapStrategy.MEAN;
         }
 
         boolean isCutoutMip = mipmapStrategy == MipmapStrategy.CUTOUT || mipmapStrategy == MipmapStrategy.STRICT_CUTOUT || mipmapStrategy == MipmapStrategy.DARK_CUTOUT;
@@ -113,6 +114,10 @@ public class MipGenerator {
 
             return result;
         }
+    }
+
+    private static boolean hasTransparentPixel(final NativeImage image) {
+        return (boolean) ReflectionUtils.tryInvoke(HAS_TRANSPARENT_PIXEL, null, image);
     }
 
     private static int darkenedAlphaBlend(final int color1, final int color2, final int color3, final int color4) {

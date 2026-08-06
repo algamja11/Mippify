@@ -1,5 +1,6 @@
 method.MipmapGenerator.alphaTestCoverage:alphaTestCoverage
 method.MipmapGenerator.scaleAlphaToCoverage:scaleAlphaToCoverage
+method.MipmapGenerator.hasTransparentPixel:hasTransparentPixel
 method.MipmapGenerator.darkenedAlphaBlend:darkenedAlphaBlend
 field.MipmapGenerator.ITEM_PREFIX:ITEM_PREFIX
 field.MipmapGenerator.ALPHA_CUTOFF:ALPHA_CUTOFF

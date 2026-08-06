@@ -13,7 +13,9 @@ public class MixinPipelines {
     @ModifyVariable(method = "register", at = @At("HEAD"))
     private static RenderPipeline mippify$register(RenderPipeline pipeline) {
         RenderPipeline override = PipelineOverrides.get(pipeline.getLocation());
-        if (Mippify.config().smoothing && override != null) {
+// FIXME
+//        if (Mippify.config().smoothing && override != null) {
+        if (override != null) {
             return override;
         }
         return pipeline;
