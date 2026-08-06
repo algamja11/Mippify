@@ -1,10 +1,9 @@
 {
   "mippify.gui.title": "Mippify Settings",
-  "mippify.gui.tooltip.restart": "Applies after restarting the game.",
   "mippify.enableMod": "Enable Mippify",
-  "mippify.enableMod.tooltip": "Controls whether Mippify is enabled. A game restart is required for full changes.",
+  "mippify.enableMod.tooltip": "Controls whether Mippify is enabled.\n§cA game restart is required for full changes.",
   "mippify.smoothing": "Smooth Mipmaps",
-  "mippify.smoothing.tooltip": "Smooths mipmaps by adjusting alpha cutout. Requires a game restart to apply.",
+  "mippify.smoothing.tooltip": "Smooths mipmaps by adjusting alpha cutout.\n§cRequires a game restart to apply.",
   "mippify.fastEdge": "Fast Edge Filtering",
-  "mippify.fastEdge.tooltip": "Optimizes the edge filtering method for cutout textures. Edge colors may become inaccurate."
+  "mippify.fastEdge.tooltip": "Optimizes the edge filtering method for cutout textures.\nEdge colors may become inaccurate."
 }
