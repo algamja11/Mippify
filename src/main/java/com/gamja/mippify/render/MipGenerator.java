@@ -1,7 +1,8 @@
 package com.gamja.mippify.render;
 
 import com.gamja.mippify.Mippify;
-import com.gamja.mippify.ReflectionUtils;
+import com.gamja.mippify.access.Mappings;
+import com.gamja.mippify.access.ReflectionUtils;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.platform.Transparency;
@@ -27,13 +28,13 @@ public class MipGenerator {
     static {
         Class<?> mipGenerator = MipmapGenerator.class;
 
-        ALPHA_TEST_COVERAGE = ReflectionUtils.tryGetMethod(mipGenerator, "alphaTestCoverage", NativeImage.class, float.class, float.class);
-        SCALE_ALPHA_TO_COVERAGE = ReflectionUtils.tryGetMethod(mipGenerator, "scaleAlphaToCoverage", NativeImage.class, float.class, float.class, float.class);
-        DARKENED_ALPHA_BLEND = ReflectionUtils.tryGetMethod(mipGenerator, "darkenedAlphaBlend", int.class, int.class, int.class, int.class);
+        ALPHA_TEST_COVERAGE = ReflectionUtils.tryGetMethod(mipGenerator, Mappings.get("method.MipmapGenerator.alphaTestCoverage"), NativeImage.class, float.class, float.class);
+        SCALE_ALPHA_TO_COVERAGE = ReflectionUtils.tryGetMethod(mipGenerator, Mappings.get("method.MipmapGenerator.scaleAlphaToCoverage"), NativeImage.class, float.class, float.class, float.class);
+        DARKENED_ALPHA_BLEND = ReflectionUtils.tryGetMethod(mipGenerator, Mappings.get("method.MipmapGenerator.darkenedAlphaBlend"), int.class, int.class, int.class, int.class);
 
-        ITEM_PREFIX = (String) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(mipGenerator, "ITEM_PREFIX"), null);
-        ALPHA_CUTOFF = (float) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(mipGenerator, "ALPHA_CUTOFF"), null);
-        STRICT_ALPHA_CUTOFF = (float) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(mipGenerator, "STRICT_ALPHA_CUTOFF"), null);
+        ITEM_PREFIX = (String) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(mipGenerator, Mappings.get("field.MipmapGenerator.ITEM_PREFIX")), null);
+        ALPHA_CUTOFF = (float) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(mipGenerator, Mappings.get("field.MipmapGenerator.ALPHA_CUTOFF")), null);
+        STRICT_ALPHA_CUTOFF = (float) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(mipGenerator, Mappings.get("field.MipmapGenerator.STRICT_ALPHA_CUTOFF")), null);
     }
 
     private static float alphaTestCoverage(final NativeImage image, final float alphaRef, final float alphaScale) {

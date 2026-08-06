@@ -1,7 +1,8 @@
 package com.gamja.mippify.render;
 
 import com.gamja.mippify.Mippify;
-import com.gamja.mippify.ReflectionUtils;
+import com.gamja.mippify.access.Mappings;
+import com.gamja.mippify.access.ReflectionUtils;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
@@ -34,8 +35,8 @@ public class PipelineOverrides {
     static {
         Class<?> pipelines = RenderPipelines.class;
 
-        RenderPipeline.Snippet blockSnippet = (RenderPipeline.Snippet) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(pipelines, "BLOCK_SNIPPET"), null);
-        RenderPipeline.Snippet terrainSnippet = (RenderPipeline.Snippet) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(pipelines, "TERRAIN_SNIPPET"), null);
+        RenderPipeline.Snippet blockSnippet = (RenderPipeline.Snippet) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(pipelines, Mappings.get("field.RenderPipelines.BLOCK_SNIPPET")), null);
+        RenderPipeline.Snippet terrainSnippet = (RenderPipeline.Snippet) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(pipelines, Mappings.get("field.RenderPipelines.TERRAIN_SNIPPET")), null);
 
         CUTOUT_BLOCK = register(
                 RenderPipeline.builder(blockSnippet)

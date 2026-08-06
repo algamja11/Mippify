@@ -1,5 +1,6 @@
-package com.gamja.mippify;
+package com.gamja.mippify.access;
 
+import com.gamja.mippify.Mippify;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
