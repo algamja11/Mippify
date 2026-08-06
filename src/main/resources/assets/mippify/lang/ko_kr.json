@@ -3,7 +3,7 @@
   "mippify.enableMod": "Mippify 활성화",
   "mippify.enableMod.tooltip": "Mippify의 작동 여부를 관리합니다.\n§c완전히 적용하려면 게임 재시작이 필요합니다.",
   "mippify.smoothing": "부드러운 밉맵",
-  "mippify.smoothing.tooltip": "투명도 컷아웃을 조정하여 밉맵을 부드럽게 만듭니다.\n§c적용하려면 게임 재시작이 필요합니다.",
+  "mippify.smoothing.tooltip": "투명도 컷아웃과 색상 혼합 방식을 수정해 밉맵을 부드럽게 만듭니다.\n§c완전히 적용하려면 게임 재시작이 필요합니다.",
   "mippify.fastEdge": "빠른 가장자리 필터링",
   "mippify.fastEdge.tooltip": "컷아웃 텍스쳐의 가장자리 필터링 방식을 최적화합니다.\n가장자리 색상이 부정확해질 수 있습니다."
 }

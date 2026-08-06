@@ -32,6 +32,7 @@ public class GuiMippifyConfig extends Screen {
     @Override
     public void init() {
         configWidgets.clear();
+        layout.removeChildren();
         clearWidgets();
         setupScreen();
         layout.visitWidgets(this::addRenderableWidget);
