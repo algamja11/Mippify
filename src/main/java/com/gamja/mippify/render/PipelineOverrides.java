@@ -11,50 +11,69 @@ import net.minecraft.resources.Identifier;
 
 @SuppressWarnings("ConstantConditions")
 public class PipelineOverrides {
-    private static final HashMap<Identifier, RenderPipeline> PIPELINE_OVERRIDES = new HashMap<>();
+    private static final HashMap<Identifier, MutablePipeline> PIPELINE_OVERRIDES = new HashMap<>();
 
-    public static final RenderPipeline CUTOUT_BLOCK;
-    public static final RenderPipeline CUTOUT_TERRAIN;
-    public static final RenderPipeline TRANSLUCENT_TERRAIN;
+    private static final Identifier EMPTY_ID = Identifier.parse("");
+    private static final RenderPipeline.Snippet BLOCK_SNIPPET;
+    private static final RenderPipeline.Snippet TERRAIN_SNIPPET;
 
-    public static RenderPipeline get(Identifier path) {
-        return PIPELINE_OVERRIDES.get(path);
-    }
-
-    public static RenderPipeline register(RenderPipeline override) {
-        return register(Identifier.withDefaultNamespace(override.getLocation().getPath()), override);
-    }
-
-    public static RenderPipeline register(Identifier path, RenderPipeline override) {
-        return PIPELINE_OVERRIDES.put(path, override);
-    }
+    public static final MutablePipeline CUTOUT_BLOCK;
+    public static final MutablePipeline CUTOUT_TERRAIN;
+    public static final MutablePipeline TRANSLUCENT_TERRAIN;
 
     static {
         Class<?> pipelines = RenderPipelines.class;
 
-        RenderPipeline.Snippet blockSnippet = (RenderPipeline.Snippet) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(pipelines, Mappings.get("field.RenderPipelines.BLOCK_SNIPPET")), null);
-        RenderPipeline.Snippet terrainSnippet = (RenderPipeline.Snippet) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(pipelines, Mappings.get("field.RenderPipelines.TERRAIN_SNIPPET")), null);
+        BLOCK_SNIPPET = (RenderPipeline.Snippet) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(pipelines, Mappings.get("field.RenderPipelines.BLOCK_SNIPPET")), null);
+        TERRAIN_SNIPPET = (RenderPipeline.Snippet) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(pipelines, Mappings.get("field.RenderPipelines.TERRAIN_SNIPPET")), null);
 
-        CUTOUT_BLOCK = register(
-                RenderPipeline.builder(blockSnippet)
-                        .withLocation(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/cutout_block"))
-                        .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+        CUTOUT_BLOCK = register(new MutablePipeline(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/cutout_block")));
+        CUTOUT_TERRAIN = register(new MutablePipeline(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/cutout_terrain")));
+        TRANSLUCENT_TERRAIN = register(new MutablePipeline(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/translucent_terrain")));
+
+        updatePipelines(true);
+    }
+
+    public static MutablePipeline get(Identifier path) {
+        return PIPELINE_OVERRIDES.get(path);
+    }
+
+    public static MutablePipeline register(MutablePipeline override) {
+        return register(Identifier.withDefaultNamespace(override.getLocation().getPath()), override);
+    }
+
+    public static MutablePipeline register(Identifier path, MutablePipeline override) {
+        PIPELINE_OVERRIDES.put(path, override);
+        return override;
+    }
+
+    public static void updatePipelines(boolean preload) {
+        Mippify.LOGGER.info("*** Updating Pipelines ***");
+
+        boolean enabled = !preload && Mippify.config().enableMod && Mippify.config().smoothing;
+        float cutoutFactor = enabled ? 0.1F : 0.5F;
+        float translucentFactor = enabled ? 0.01F : 0.1F;
+
+        CUTOUT_BLOCK.set(
+                RenderPipeline.builder(BLOCK_SNIPPET)
+                        .withLocation(EMPTY_ID)
+                        .withShaderDefine("ALPHA_CUTOUT", cutoutFactor)
                         .build()
         );
 
-        CUTOUT_TERRAIN = register(
-                RenderPipeline.builder(terrainSnippet)
-                        .withLocation(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/cutout_terrain"))
-                        .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+        CUTOUT_TERRAIN.set(
+                RenderPipeline.builder(TERRAIN_SNIPPET)
+                        .withLocation(EMPTY_ID)
+                        .withShaderDefine("ALPHA_CUTOUT", cutoutFactor)
                         .build()
         );
 
-        TRANSLUCENT_TERRAIN = register(
-                RenderPipeline.builder(terrainSnippet)
-                .withLocation(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/translucent_terrain"))
-                .withBlend(BlendFunction.TRANSLUCENT)
-                .withShaderDefine("ALPHA_CUTOUT", 0.01F)
-                .build()
+        TRANSLUCENT_TERRAIN.set(
+                RenderPipeline.builder(TERRAIN_SNIPPET)
+                        .withLocation(EMPTY_ID)
+                        .withBlend(BlendFunction.TRANSLUCENT)
+                        .withShaderDefine("ALPHA_CUTOUT", translucentFactor)
+                        .build()
         );
     }
 }
