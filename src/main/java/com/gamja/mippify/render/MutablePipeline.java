@@ -1,13 +1,14 @@
 package com.gamja.mippify.render;
 
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.pipeline.BindGroupLayout;
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.DepthTestFunction;
+import com.mojang.blaze3d.platform.LogicOp;
 import com.mojang.blaze3d.platform.PolygonMode;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.client.renderer.ShaderDefines;
 import net.minecraft.resources.Identifier;
 
@@ -20,38 +21,56 @@ public class MutablePipeline extends RenderPipeline {
     private Identifier vertexShader;
     private Identifier fragmentShader;
     private ShaderDefines shaderDefines;
-    private List<BindGroupLayout> bindGroupLayouts;
-    private DepthStencilState depthStencilState;
+    private List<String> samplers;
+    private List<UniformDescription> uniforms;
+    private DepthTestFunction depthTestFunction;
     private PolygonMode polygonMode;
     private boolean cull;
-    private ColorTargetState[] colorTargetStates;
-    private VertexFormat[] vertexFormatPerBuffer;
-    private PrimitiveTopology primitiveTopology;
+    private LogicOp colorLogic;
+    private Optional<BlendFunction> blendFunction;
+    private boolean writeColor;
+    private boolean writeAlpha;
+    private boolean writeDepth;
+    private VertexFormat vertexFormat;
+    private VertexFormat.Mode vertexFormatMode;
+    private float depthBiasScaleFactor;
+    private float depthBiasConstant;
 
     public MutablePipeline(Identifier location) {
-        this(location, EMPTY_ID, EMPTY_ID, ShaderDefines.EMPTY, List.of(), new ColorTargetState[1], DepthStencilState.DEFAULT, PolygonMode.FILL, false, new VertexFormat[16], PrimitiveTopology.LINES, -1);
+        this(location, EMPTY_ID, EMPTY_ID, ShaderDefines.EMPTY, List.of(), List.of(), Optional.empty(), DepthTestFunction.NO_DEPTH_TEST, PolygonMode.FILL, false, false, false, false, LogicOp.NONE, DefaultVertexFormat.EMPTY, VertexFormat.Mode.LINES, 0.0F, 0.0F, -1);
     }
 
-    public MutablePipeline(Identifier location, Identifier vertexShader, Identifier fragmentShader, ShaderDefines shaderDefines, List<BindGroupLayout> bindGroupLayouts, ColorTargetState[] colorTargetStates, DepthStencilState depthStencilState, PolygonMode polygonMode, boolean cull, VertexFormat[] vertexFormatPerBuffer, PrimitiveTopology primitiveTopology, int sortKey) {
-        super(location, vertexShader, fragmentShader, shaderDefines, bindGroupLayouts, colorTargetStates, depthStencilState, polygonMode, cull, vertexFormatPerBuffer, primitiveTopology, sortKey);
+    public MutablePipeline(Identifier location, Identifier vertexShader, Identifier fragmentShader, ShaderDefines shaderDefines, List<String> samplers, List<UniformDescription> uniforms, Optional<BlendFunction> blendFunction, DepthTestFunction depthTestFunction, PolygonMode polygonMode, boolean cull, boolean writeColor, boolean writeAlpha, boolean writeDepth, LogicOp colorLogic, VertexFormat vertexFormat, VertexFormat.Mode vertexFormatMode, float depthBiasScaleFactor, float depthBiasConstant, int sortKey) {
+        super(location, vertexShader, fragmentShader, shaderDefines, samplers, uniforms, blendFunction, depthTestFunction, polygonMode, cull, writeColor, writeAlpha, writeDepth, colorLogic, vertexFormat, vertexFormatMode, depthBiasScaleFactor, depthBiasConstant, sortKey);
     }
 
     public void set(RenderPipeline pipeline) {
-        set(pipeline.getVertexShader(), pipeline.getFragmentShader(), pipeline.getShaderDefines(), pipeline.getBindGroupLayouts(), pipeline.getColorTargetStates(), pipeline.getDepthStencilState(), pipeline.getPolygonMode(), pipeline.isCull(), pipeline.getVertexFormatBindings(), pipeline.getPrimitiveTopology());
+        set(pipeline.getVertexShader(), pipeline.getFragmentShader(), pipeline.getShaderDefines(), pipeline.getSamplers(), pipeline.getUniforms(), pipeline.getBlendFunction(), pipeline.getDepthTestFunction(), pipeline.getPolygonMode(), pipeline.isCull(), pipeline.isWriteColor(), pipeline.isWriteAlpha(), pipeline.isWriteDepth(), pipeline.getColorLogic(), pipeline.getVertexFormat(), pipeline.getVertexFormatMode(), pipeline.getDepthBiasScaleFactor(), pipeline.getDepthBiasConstant());
     }
 
-    public void set(Identifier vertexShader, Identifier fragmentShader, ShaderDefines shaderDefines, List<BindGroupLayout> bindGroupLayouts, ColorTargetState[] colorTargetStates, DepthStencilState depthStencilState, PolygonMode polygonMode, boolean cull, VertexFormat[] vertexFormatPerBuffer, PrimitiveTopology primitiveTopology) {
+    public void set(Identifier vertexShader, Identifier fragmentShader, ShaderDefines shaderDefines, List<String> samplers, List<UniformDescription> uniforms, Optional<BlendFunction> blendFunction, DepthTestFunction depthTestFunction, PolygonMode polygonMode, boolean cull, boolean writeColor, boolean writeAlpha, boolean writeDepth, LogicOp colorLogic, VertexFormat vertexFormat, VertexFormat.Mode vertexFormatMode, float depthBiasScaleFactor, float depthBiasConstant) {
         this.vertexShader = vertexShader;
         this.fragmentShader = fragmentShader;
         this.shaderDefines = shaderDefines;
-        this.bindGroupLayouts = bindGroupLayouts;
-        this.depthStencilState = depthStencilState;
+        this.samplers = samplers;
+        this.uniforms = uniforms;
+        this.depthTestFunction = depthTestFunction;
         this.polygonMode = polygonMode;
         this.cull = cull;
-        this.colorTargetStates = colorTargetStates;
-        this.primitiveTopology = primitiveTopology;
-        this.vertexFormatPerBuffer = new VertexFormat[16];
-        System.arraycopy(vertexFormatPerBuffer, 0, this.vertexFormatPerBuffer, 0, this.vertexFormatPerBuffer.length);
+        this.blendFunction = blendFunction;
+        this.writeColor = writeColor;
+        this.writeAlpha = writeAlpha;
+        this.writeDepth = writeDepth;
+        this.colorLogic = colorLogic;
+        this.vertexFormat = vertexFormat;
+        this.vertexFormatMode = vertexFormatMode;
+        this.depthBiasScaleFactor = depthBiasScaleFactor;
+        this.depthBiasConstant = depthBiasConstant;
+    }
+
+    @Override
+    public DepthTestFunction getDepthTestFunction() {
+        return this.depthTestFunction;
     }
 
     @Override
@@ -65,33 +84,48 @@ public class MutablePipeline extends RenderPipeline {
     }
 
     @Override
-    public ColorTargetState[] getColorTargetStates() {
-        return this.colorTargetStates;
+    public LogicOp getColorLogic() {
+        return this.colorLogic;
     }
 
     @Override
-    public ColorTargetState getColorTargetState() {
-        return this.colorTargetStates[0];
+    public Optional<BlendFunction> getBlendFunction() {
+        return this.blendFunction;
     }
 
     @Override
-    public DepthStencilState getDepthStencilState() {
-        return this.depthStencilState;
+    public boolean isWriteColor() {
+        return this.writeColor;
     }
 
     @Override
-    public VertexFormat[] getVertexFormatBindings() {
-        return this.vertexFormatPerBuffer;
+    public boolean isWriteAlpha() {
+        return this.writeAlpha;
     }
 
     @Override
-    public VertexFormat getVertexFormatBinding(final int bindingIndex) {
-        return this.vertexFormatPerBuffer[bindingIndex];
+    public boolean isWriteDepth() {
+        return this.writeDepth;
     }
 
     @Override
-    public PrimitiveTopology getPrimitiveTopology() {
-        return this.primitiveTopology;
+    public float getDepthBiasScaleFactor() {
+        return this.depthBiasScaleFactor;
+    }
+
+    @Override
+    public float getDepthBiasConstant() {
+        return this.depthBiasConstant;
+    }
+
+    @Override
+    public VertexFormat getVertexFormat() {
+        return this.vertexFormat;
+    }
+
+    @Override
+    public VertexFormat.Mode getVertexFormatMode() {
+        return this.vertexFormatMode;
     }
 
     @Override
@@ -110,12 +144,17 @@ public class MutablePipeline extends RenderPipeline {
     }
 
     @Override
-    public List<BindGroupLayout> getBindGroupLayouts() {
-        return this.bindGroupLayouts;
+    public List<String> getSamplers() {
+        return this.samplers;
+    }
+
+    @Override
+    public List<UniformDescription> getUniforms() {
+        return this.uniforms;
     }
 
     @Override
     public boolean wantsDepthTexture() {
-        return this.depthStencilState != null;
+        return this.depthTestFunction != DepthTestFunction.NO_DEPTH_TEST || this.depthBiasConstant != 0.0F || this.depthBiasScaleFactor != 0.0F || this.writeDepth;
     }
 }

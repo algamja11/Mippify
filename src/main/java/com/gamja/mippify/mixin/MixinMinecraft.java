@@ -3,7 +3,6 @@ package com.gamja.mippify.mixin;
 import com.gamja.mippify.Lang;
 import com.gamja.mippify.gui.GuiMippifyConfig;
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.GameLoadCookie;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,7 +21,7 @@ public class MixinMinecraft {
     }
 
     @Inject(method = "onResourceLoadFinished", at = @At("RETURN"))
-    private void mippify$onResourceLoadFinished(GameLoadCookie loadCookie, CallbackInfo ci) {
+    private void mippify$onResourceLoadFinished(CallbackInfo ci) {
         Lang.reloadLanguages();
     }
 }

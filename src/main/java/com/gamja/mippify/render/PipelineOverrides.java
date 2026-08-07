@@ -79,5 +79,7 @@ public class PipelineOverrides {
                         .withShaderDefine("ALPHA_CUTOUT", translucentFactor)
                         .build()
         );
+
+        Mippify.LOGGER.info("*** Pipelines Updated ***");
     }
 }
