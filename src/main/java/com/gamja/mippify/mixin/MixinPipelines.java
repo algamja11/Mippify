@@ -1,7 +1,7 @@
 package com.gamja.mippify.mixin;
 
 import com.gamja.mippify.render.PipelineOverrides;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.minecraft.client.renderer.RenderPipelines;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
