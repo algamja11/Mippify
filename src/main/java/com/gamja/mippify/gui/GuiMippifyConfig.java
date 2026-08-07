@@ -1,5 +1,6 @@
 package com.gamja.mippify.gui;
 
+import com.gamja.mippify.Lang;
 import com.gamja.mippify.Mippify;
 import com.gamja.mippify.MippifyConfig;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class GuiMippifyConfig extends Screen {
     private boolean anyChanged = false;
 
     public GuiMippifyConfig(Screen parentGui) {
-        super(Component.translatable("mippify.gui.title"));
+        super(Lang.getComponent("mippify.gui.title"));
         this.parentGui = parentGui;
         layout = new HeaderAndFooterLayout(this);
         config = Mippify.config();
@@ -70,7 +71,7 @@ public class GuiMippifyConfig extends Screen {
 
             TooltipRenderUtil.renderTooltipBackground(graphics, boxX, boxY, boxW, boxH, null);
 
-            Component tooltip = Component.translatable(configWidget.getAction().tooltip());
+            Component tooltip = Lang.getComponent(configWidget.getAction().tooltip());
             int i = 0;
             for (FormattedCharSequence line : minecraft.font.split(tooltip, boxW - 6)) {
                 graphics.drawString(minecraft.font, line, boxX + 3, boxY + 3 + i * 10, 0xFFDDDDDD);

@@ -5,7 +5,8 @@
 	"mixins": [
       "MixinMinecraft",
       "MixinMipGenerator",
-      "MixinPipelines"
+      "MixinPipelines",
+      "MixinShaderManager"
 	],
 	"injectors": {
 		"defaultRequire": 1

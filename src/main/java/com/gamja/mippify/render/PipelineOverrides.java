@@ -54,6 +54,10 @@ public class PipelineOverrides {
         float cutoutFactor = enabled ? 0.1F : 0.5F;
         float translucentFactor = enabled ? 0.01F : 0.1F;
 
+        Mippify.LOGGER.info("Smoothing: {}", enabled);
+        Mippify.LOGGER.info("Cutout1: {}", cutoutFactor);
+        Mippify.LOGGER.info("Cutout2: {}", translucentFactor);
+
         CUTOUT_BLOCK.set(
                 RenderPipeline.builder(BLOCK_SNIPPET)
                         .withLocation(EMPTY_ID)

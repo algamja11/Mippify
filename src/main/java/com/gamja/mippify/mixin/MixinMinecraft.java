@@ -1,16 +1,15 @@
 package com.gamja.mippify.mixin;
 
+import com.gamja.mippify.Lang;
 import com.gamja.mippify.gui.GuiMippifyConfig;
-import com.gamja.mippify.render.PipelineOverrides;
 import com.mojang.blaze3d.platform.InputConstants;
-import java.util.concurrent.CompletableFuture;
+import net.minecraft.client.GameLoadCookie;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Minecraft.class)
 public class MixinMinecraft {
@@ -22,8 +21,8 @@ public class MixinMinecraft {
         }
     }
 
-    @Inject(method = "reloadResourcePacks()Ljava/util/concurrent/CompletableFuture;", at = @At("HEAD"))
-    private void mippify$reloadResources(CallbackInfoReturnable<CompletableFuture<Void>> cir) {
-        PipelineOverrides.updatePipelines(false);
+    @Inject(method = "onResourceLoadFinished", at = @At("RETURN"))
+    private void mippify$onResourceLoadFinished(GameLoadCookie loadCookie, CallbackInfo ci) {
+        Lang.reloadLanguages();
     }
 }
