@@ -18,22 +18,28 @@ public class PipelineOverrides {
     private static final Identifier EMPTY_ID = Identifier.parse("");
     private static final RenderPipeline.Snippet BLOCK_SNIPPET;
     private static final RenderPipeline.Snippet TERRAIN_SNIPPET;
+    private static final RenderPipeline.Snippet MULTIDRAW_TERRAIN_SNIPPET;
 
     public static final MutablePipeline CUTOUT_BLOCK;
     public static final MutablePipeline CUTOUT_TERRAIN;
     public static final MutablePipeline TRANSLUCENT_TERRAIN;
     public static final MutablePipeline TRANSLUCENT_BLOCK;
+    public static final MutablePipeline CUTOUT_TERRAIN_MULTIDRAW;
+    public static final MutablePipeline TRANSLUCENT_TERRAIN_MULTIDRAW;
 
     static {
         Class<?> pipelines = RenderPipelines.class;
 
         BLOCK_SNIPPET = (RenderPipeline.Snippet) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(pipelines, Mappings.get("field.RenderPipelines.BLOCK_SNIPPET")), null);
         TERRAIN_SNIPPET = (RenderPipeline.Snippet) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(pipelines, Mappings.get("field.RenderPipelines.TERRAIN_SNIPPET")), null);
+        MULTIDRAW_TERRAIN_SNIPPET = (RenderPipeline.Snippet) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(pipelines, Mappings.get("field.RenderPipelines.MULTIDRAW_TERRAIN_SNIPPET")), null);
 
         CUTOUT_BLOCK = register(new MutablePipeline(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/cutout_block")));
         CUTOUT_TERRAIN = register(new MutablePipeline(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/cutout_terrain")));
         TRANSLUCENT_TERRAIN = register(new MutablePipeline(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/translucent_terrain")));
         TRANSLUCENT_BLOCK = register(new MutablePipeline(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/translucent_block")));
+        CUTOUT_TERRAIN_MULTIDRAW = register(new MutablePipeline(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/cutout_terrain_multidraw")));
+        TRANSLUCENT_TERRAIN_MULTIDRAW = register(new MutablePipeline(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/translucent_terrain_multidraw")));
 
         updatePipelines(true);
     }
@@ -90,6 +96,22 @@ public class PipelineOverrides {
                         .withShaderDefine("ALPHA_CUTOUT", translucentFactor)
                         .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
                         .withDepthStencilState(DepthStencilState.DEFAULT)
+                        .build()
+        );
+
+        CUTOUT_TERRAIN_MULTIDRAW.set(
+                RenderPipeline.builder(MULTIDRAW_TERRAIN_SNIPPET)
+                        .withLocation(EMPTY_ID)
+                        .withShaderDefine("ALPHA_CUTOUT", cutoutFactor)
+                        .withColorTargetState(ColorTargetState.DEFAULT)
+                        .build()
+        );
+
+        TRANSLUCENT_TERRAIN_MULTIDRAW.set(
+                RenderPipeline.builder(MULTIDRAW_TERRAIN_SNIPPET)
+                        .withLocation(EMPTY_ID)
+                        .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+                        .withShaderDefine("ALPHA_CUTOUT", translucentFactor)
                         .build()
         );
 
