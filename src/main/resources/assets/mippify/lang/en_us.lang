@@ -1,0 +1,7 @@
+mippify.gui.title=Mippify Settings
+mippify.enableMod=Enable Mippify
+mippify.enableMod.tooltip=Controls whether Mippify is enabled.\n§cA game restart is required for full changes.
+mippify.smoothing=Smooth Mipmaps
+mippify.smoothing.tooltip=Smooths mipmaps by adjusting alpha cutout and modifying the color blending method.
+mippify.fastEdge=Fast Edge Filtering
+mippify.fastEdge.tooltip=Optimizes the edge filtering method for cutout textures.\nEdge colors may become inaccurate.

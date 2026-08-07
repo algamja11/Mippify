@@ -1,5 +1,6 @@
 package com.gamja.mippify.gui;
 
+import com.gamja.mippify.Lang;
 import com.gamja.mippify.Mippify;
 import com.gamja.mippify.MippifyConfig;
 import net.minecraft.network.chat.CommonComponents;
@@ -36,8 +37,12 @@ public class ConfigHandler {
         }
     }
 
+    private static MippifyConfig config() {
+        return Mippify.config();
+    }
+
     public static Component getMessage(Action action) {
-        MutableComponent message = Component.translatable(action.key()).append(": ");
+        MutableComponent message = Lang.getComponent(action.key()).append(": ");
         if (action.type() == 0) {
             message.append(boolConfig(action) ? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF);
         } else if (action.type() == 1) {
@@ -48,43 +53,38 @@ public class ConfigHandler {
     }
 
     public static void updateConfig(Action action) {
-        MippifyConfig config = Mippify.config();
         switch (action) {
-            case ENABLE_MOD -> config.enableMod = !config.enableMod;
-            case SMOOTHING -> config.smoothing = !config.smoothing;
-            case FAST_EDGE -> config.fastEdge = !config.fastEdge;
+            case ENABLE_MOD -> config().enableMod = !config().enableMod;
+            case SMOOTHING -> config().smoothing = !config().smoothing;
+            case FAST_EDGE -> config().fastEdge = !config().fastEdge;
         }
     }
 
     public static void updateConfig(Action action, double value) {
-        MippifyConfig config = Mippify.config();
         switch (action) {
-//            case A -> config.a = value;
+//            case A -> config().a = value;
         }
     }
 
     public static boolean boolConfig(Action action) {
-        MippifyConfig config = Mippify.config();
         return switch (action) {
-            case ENABLE_MOD -> config.enableMod;
-            case SMOOTHING -> config.smoothing;
-            case FAST_EDGE -> config.fastEdge;
+            case ENABLE_MOD -> config().enableMod;
+            case SMOOTHING -> config().smoothing;
+            case FAST_EDGE -> config().fastEdge;
             default -> false;
         };
     }
 
     public static double doubleConfig(Action action) {
-        MippifyConfig config = Mippify.config();
         return switch (action) {
-//            case A -> config.a;
+//            case A -> config().a;
             default -> -1.0;
         };
     }
 
     public static Component doubleConfigDisplay(Action action) {
-        MippifyConfig config = Mippify.config();
         return switch (action) {
-//            case A -> Component.literal(config.a.toString());
+//            case A -> Component.literal(config().a.toString());
             default -> Component.literal("unknown");
         };
     }
