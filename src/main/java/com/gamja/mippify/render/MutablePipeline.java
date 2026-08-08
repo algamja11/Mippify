@@ -17,22 +17,21 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.client.renderer.ShaderDefines;
 import net.minecraft.resources.Identifier;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Edited from {@link com.mojang.renderpearl.api.pipeline.RenderPipeline}
  */
 
 public class MutablePipeline extends RenderPipeline {
-    private static final Identifier EMPTY_ID = Identifier.parse("");
+    private static Identifier EMPTY_ID = Identifier.parse("");
     private Map<ShaderType, Identifier> shaders;
     private ShaderDefines shaderDefines;
     private List<BindGroupLayout> bindGroupLayouts;
-    private @Nullable DepthStencilState depthStencilState;
+    private DepthStencilState depthStencilState;
     private PolygonMode polygonMode;
     private boolean cull;
-    private List<@Nullable ColorTargetState> colorTargetStates;
-    private List<@Nullable VertexFormat> vertexFormatPerBuffer;
+    private List<ColorTargetState> colorTargetStates;
+    private List<VertexFormat> vertexFormatPerBuffer;
     private PrimitiveTopology primitiveTopology;
     private int pushConstantSize;
 
@@ -40,7 +39,7 @@ public class MutablePipeline extends RenderPipeline {
         this(location, Map.of(ShaderType.VERTEX, EMPTY_ID), ShaderDefines.EMPTY, List.of(), new ColorTargetState[0], DepthStencilState.DEFAULT, PolygonMode.FILL, false, new VertexFormat[0], PrimitiveTopology.LINES, -1, -1);
     }
 
-    public MutablePipeline(final Identifier location, final Map<ShaderType, Identifier> shaders, final ShaderDefines shaderDefines, final Collection<BindGroupLayout> bindGroupLayouts, final @Nullable ColorTargetState[] colorTargetStates, final @Nullable DepthStencilState depthStencilState, final PolygonMode polygonMode, final boolean cull, final @Nullable VertexFormat[] vertexFormatPerBuffer, final PrimitiveTopology primitiveTopology, final int pushConstantSize, final int sortKey) {
+    public MutablePipeline(Identifier location, Map<ShaderType, Identifier> shaders, ShaderDefines shaderDefines, Collection<BindGroupLayout> bindGroupLayouts, ColorTargetState[] colorTargetStates, DepthStencilState depthStencilState, PolygonMode polygonMode, boolean cull, VertexFormat[] vertexFormatPerBuffer, PrimitiveTopology primitiveTopology, int pushConstantSize, int sortKey) {
         super(location, shaders, shaderDefines, bindGroupLayouts, colorTargetStates, depthStencilState, polygonMode, cull, vertexFormatPerBuffer, primitiveTopology, pushConstantSize, sortKey);
     }
 
@@ -48,7 +47,7 @@ public class MutablePipeline extends RenderPipeline {
         set(pipeline.getShaders(), pipeline.getShaderDefines(), pipeline.getBindGroupLayouts(), pipeline.getColorTargetStates().toArray(ColorTargetState[]::new), pipeline.getDepthStencilState(), pipeline.getPolygonMode(), pipeline.isCull(), pipeline.getVertexFormatBindings().toArray(VertexFormat[]::new), pipeline.getPrimitiveTopology(), pipeline.pushConstantSize());
     }
 
-    public void set(final Map<ShaderType, Identifier> shaders, final ShaderDefines shaderDefines, final Collection<BindGroupLayout> bindGroupLayouts, final @Nullable ColorTargetState[] colorTargetStates, final @Nullable DepthStencilState depthStencilState, final PolygonMode polygonMode, final boolean cull, final @Nullable VertexFormat[] vertexFormatPerBuffer, final PrimitiveTopology primitiveTopology, final int pushConstantSize) {
+    public void set(Map<ShaderType, Identifier> shaders, ShaderDefines shaderDefines, Collection<BindGroupLayout> bindGroupLayouts, ColorTargetState[] colorTargetStates, DepthStencilState depthStencilState, PolygonMode polygonMode, boolean cull, VertexFormat[] vertexFormatPerBuffer, PrimitiveTopology primitiveTopology, int pushConstantSize) {
         this.shaders = Collections.unmodifiableMap(new EnumMap(shaders));
         this.shaderDefines = shaderDefines;
         this.bindGroupLayouts = List.copyOf(bindGroupLayouts);
@@ -72,22 +71,22 @@ public class MutablePipeline extends RenderPipeline {
     }
 
     @Override
-    public List<@Nullable ColorTargetState> getColorTargetStates() {
+    public List<ColorTargetState> getColorTargetStates() {
         return this.colorTargetStates;
     }
 
     @Override
-    public @Nullable DepthStencilState getDepthStencilState() {
+    public DepthStencilState getDepthStencilState() {
         return this.depthStencilState;
     }
 
     @Override
-    public List<@Nullable VertexFormat> getVertexFormatBindings() {
+    public List<VertexFormat> getVertexFormatBindings() {
         return this.vertexFormatPerBuffer;
     }
 
     @Override
-    public @Nullable VertexFormat getVertexFormatBinding(final int bindingIndex) {
+    public VertexFormat getVertexFormatBinding(int bindingIndex) {
         return this.vertexFormatPerBuffer.get(bindingIndex);
     }
 
