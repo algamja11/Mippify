@@ -32,8 +32,7 @@ public class Mappings {
         }
         String path = "/assets/mippify/" + loader + ".mappings";
 
-        try {
-            InputStream is = Mappings.class.getResourceAsStream(path);
+        try (InputStream is = Mappings.class.getResourceAsStream(path)) {
             if (is != null) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8.newDecoder()));
                 String curLine;

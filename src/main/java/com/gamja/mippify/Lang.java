@@ -1,15 +1,14 @@
 package com.gamja.mippify;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.Resource;
 
 public class Lang {
     private static final HashMap<String, String> FALLBACK = new HashMap<>();
@@ -38,12 +37,11 @@ public class Lang {
 
     private static void loadLanguages(String locale, HashMap<String, String> map) {
         map.clear();
-
         Identifier path = Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "lang/" + locale + ".lang");
-        try {
-            Optional<Resource> res = Minecraft.getInstance().getResourceManager().getResource(path);
-            if (res.isPresent()) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(res.get().open(), StandardCharsets.UTF_8.newDecoder()));
+
+        try (InputStream is = ResourceUtils.get(Lang.class, path)) {
+            if (is != null) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8.newDecoder()));
                 String curLine;
                 while ((curLine = in.readLine()) != null) {
                     String[] kv = curLine.split("=", 2);
