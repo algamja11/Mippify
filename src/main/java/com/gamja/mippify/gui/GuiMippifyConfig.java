@@ -33,7 +33,6 @@ public class GuiMippifyConfig extends Screen {
     @Override
     public void init() {
         configWidgets.clear();
-        layout.removeChildren();
         clearWidgets();
         setupScreen();
         layout.visitWidgets(this::addRenderableWidget);
@@ -84,7 +83,7 @@ public class GuiMippifyConfig extends Screen {
     @Override
     public void onClose() {
         super.onClose();
-        minecraft.gui.setScreen(parentGui);
+        minecraft.setScreen(parentGui);
         config.saveAll();
 
         if (anyChanged) {

@@ -1,11 +1,10 @@
 package com.gamja.mippify.render;
 
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.pipeline.BindGroupLayout;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.PolygonMode;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.List;
 import net.minecraft.client.renderer.ShaderDefines;
@@ -16,42 +15,43 @@ import net.minecraft.resources.Identifier;
  */
 
 public class MutablePipeline extends RenderPipeline {
-    private static final Identifier EMPTY_ID = Identifier.parse("");
+    private static Identifier EMPTY_ID = Identifier.parse("");
     private Identifier vertexShader;
     private Identifier fragmentShader;
     private ShaderDefines shaderDefines;
-    private List<BindGroupLayout> bindGroupLayouts;
+    private List<String> samplers;
+    private List<UniformDescription> uniforms;
     private DepthStencilState depthStencilState;
     private PolygonMode polygonMode;
     private boolean cull;
-    private ColorTargetState[] colorTargetStates;
-    private VertexFormat[] vertexFormatPerBuffer;
-    private PrimitiveTopology primitiveTopology;
+    private ColorTargetState colorTargetState;
+    private VertexFormat vertexFormat;
+    private VertexFormat.Mode vertexFormatMode;
 
     public MutablePipeline(Identifier location) {
-        this(location, EMPTY_ID, EMPTY_ID, ShaderDefines.EMPTY, List.of(), new ColorTargetState[1], DepthStencilState.DEFAULT, PolygonMode.FILL, false, new VertexFormat[16], PrimitiveTopology.LINES, -1);
+        this(location, EMPTY_ID, EMPTY_ID, ShaderDefines.EMPTY, List.of(), List.of(), ColorTargetState.DEFAULT, DepthStencilState.DEFAULT, PolygonMode.FILL, false, DefaultVertexFormat.EMPTY, VertexFormat.Mode.LINES, -1);
     }
 
-    public MutablePipeline(Identifier location, Identifier vertexShader, Identifier fragmentShader, ShaderDefines shaderDefines, List<BindGroupLayout> bindGroupLayouts, ColorTargetState[] colorTargetStates, DepthStencilState depthStencilState, PolygonMode polygonMode, boolean cull, VertexFormat[] vertexFormatPerBuffer, PrimitiveTopology primitiveTopology, int sortKey) {
-        super(location, vertexShader, fragmentShader, shaderDefines, bindGroupLayouts, colorTargetStates, depthStencilState, polygonMode, cull, vertexFormatPerBuffer, primitiveTopology, sortKey);
+    public MutablePipeline(Identifier location, Identifier vertexShader, Identifier fragmentShader, ShaderDefines shaderDefines, List<String> samplers, List<UniformDescription> uniforms, ColorTargetState colorTargetState, DepthStencilState depthStencilState, PolygonMode polygonMode, boolean cull, VertexFormat vertexFormat, VertexFormat.Mode vertexFormatMode, int sortKey) {
+        super(location, vertexShader, fragmentShader, shaderDefines, samplers, uniforms, colorTargetState, depthStencilState, polygonMode, cull, vertexFormat, vertexFormatMode, sortKey);
     }
 
     public void set(RenderPipeline pipeline) {
-        set(pipeline.getVertexShader(), pipeline.getFragmentShader(), pipeline.getShaderDefines(), pipeline.getBindGroupLayouts(), pipeline.getColorTargetStates(), pipeline.getDepthStencilState(), pipeline.getPolygonMode(), pipeline.isCull(), pipeline.getVertexFormatBindings(), pipeline.getPrimitiveTopology());
+        set(pipeline.getVertexShader(), pipeline.getFragmentShader(), pipeline.getShaderDefines(), pipeline.getSamplers(), pipeline.getUniforms(), pipeline.getColorTargetState(), pipeline.getDepthStencilState(), pipeline.getPolygonMode(), pipeline.isCull(), pipeline.getVertexFormat(), pipeline.getVertexFormatMode());
     }
 
-    public void set(Identifier vertexShader, Identifier fragmentShader, ShaderDefines shaderDefines, List<BindGroupLayout> bindGroupLayouts, ColorTargetState[] colorTargetStates, DepthStencilState depthStencilState, PolygonMode polygonMode, boolean cull, VertexFormat[] vertexFormatPerBuffer, PrimitiveTopology primitiveTopology) {
+    public void set(Identifier vertexShader, Identifier fragmentShader, ShaderDefines shaderDefines, List<String> samplers, List<UniformDescription> uniforms, ColorTargetState colorTargetState,  DepthStencilState depthStencilState, PolygonMode polygonMode, boolean cull, VertexFormat vertexFormat, VertexFormat.Mode vertexFormatMode) {
         this.vertexShader = vertexShader;
         this.fragmentShader = fragmentShader;
         this.shaderDefines = shaderDefines;
-        this.bindGroupLayouts = bindGroupLayouts;
+        this.samplers = samplers;
+        this.uniforms = uniforms;
         this.depthStencilState = depthStencilState;
         this.polygonMode = polygonMode;
         this.cull = cull;
-        this.colorTargetStates = colorTargetStates;
-        this.primitiveTopology = primitiveTopology;
-        this.vertexFormatPerBuffer = new VertexFormat[16];
-        System.arraycopy(vertexFormatPerBuffer, 0, this.vertexFormatPerBuffer, 0, this.vertexFormatPerBuffer.length);
+        this.colorTargetState = colorTargetState;
+        this.vertexFormat = vertexFormat;
+        this.vertexFormatMode = vertexFormatMode;
     }
 
     @Override
@@ -65,13 +65,8 @@ public class MutablePipeline extends RenderPipeline {
     }
 
     @Override
-    public ColorTargetState[] getColorTargetStates() {
-        return this.colorTargetStates;
-    }
-
-    @Override
     public ColorTargetState getColorTargetState() {
-        return this.colorTargetStates[0];
+        return this.colorTargetState;
     }
 
     @Override
@@ -80,18 +75,13 @@ public class MutablePipeline extends RenderPipeline {
     }
 
     @Override
-    public VertexFormat[] getVertexFormatBindings() {
-        return this.vertexFormatPerBuffer;
+    public VertexFormat getVertexFormat() {
+        return this.vertexFormat;
     }
 
     @Override
-    public VertexFormat getVertexFormatBinding(final int bindingIndex) {
-        return this.vertexFormatPerBuffer[bindingIndex];
-    }
-
-    @Override
-    public PrimitiveTopology getPrimitiveTopology() {
-        return this.primitiveTopology;
+    public VertexFormat.Mode getVertexFormatMode() {
+        return this.vertexFormatMode;
     }
 
     @Override
@@ -110,8 +100,13 @@ public class MutablePipeline extends RenderPipeline {
     }
 
     @Override
-    public List<BindGroupLayout> getBindGroupLayouts() {
-        return this.bindGroupLayouts;
+    public List<String> getSamplers() {
+        return this.samplers;
+    }
+
+    @Override
+    public List<UniformDescription> getUniforms() {
+        return this.uniforms;
     }
 
     @Override
