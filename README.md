@@ -9,7 +9,8 @@
 <b>Mod Compatibility</b> (✔️ Compatible, ⚠️ Issues, ❌ Incompatible)
 
 Compatible with most mods, but may not work properly or cause conflicts when used with mods that deeply modify game rendering, such as rendering optimization mods
-- ...
+- ⚠️ Sodium
+- ⚠️ VulkanMod
 
 # [ Features ]
 ## Smooth Mipmaps (Off / On)
