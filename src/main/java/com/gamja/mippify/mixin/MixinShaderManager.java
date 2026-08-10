@@ -1,6 +1,6 @@
 package com.gamja.mippify.mixin;
 
-import com.gamja.mippify.render.PipelineOverrides;
+import com.gamja.mippify.render.PipelinePatcher;
 import net.minecraft.client.renderer.ShaderManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -13,6 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinShaderManager {
     @Inject(method = "prepare(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)Lnet/minecraft/client/renderer/ShaderManager$Configs;", at = @At("RETURN"))
     private void mippify$prepare(ResourceManager manager, ProfilerFiller profiler, CallbackInfoReturnable<ShaderManager.Configs> cir) {
-        PipelineOverrides.updatePipelines(false);
+        PipelinePatcher.patchPipelines();
     }
 }

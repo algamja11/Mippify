@@ -1,3 +1,4 @@
+# Vanilla
 method.MipmapGenerator.alphaTestCoverage:alphaTestCoverage
 method.MipmapGenerator.scaleAlphaToCoverage:scaleAlphaToCoverage
 method.MipmapGenerator.darkenedAlphaBlend:darkenedAlphaBlend
@@ -7,3 +8,10 @@ field.MipmapGenerator.STRICT_ALPHA_CUTOFF:STRICT_ALPHA_CUTOFF
 
 field.RenderPipelines.BLOCK_SNIPPET:BLOCK_SNIPPET
 field.RenderPipelines.TERRAIN_SNIPPET:TERRAIN_SNIPPET
+
+# Mods
+mod.sodium.class.SodiumClientMod:net.caffeinemc.mods.sodium.client.SodiumClientMod
+
+mod.sodium.method.ShaderChunkRenderer.createShaderConstants:createShaderConstants
+mod.sodium.field.ShaderChunkRenderer.BIND_GROUP:BIND_GROUP
+mod.sodium.field.ShaderChunkRenderer.vertexFormat:vertexFormat

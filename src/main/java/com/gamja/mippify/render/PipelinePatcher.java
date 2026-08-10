@@ -3,6 +3,7 @@ package com.gamja.mippify.render;
 import com.gamja.mippify.Mippify;
 import com.gamja.mippify.access.Mappings;
 import com.gamja.mippify.access.ReflectionUtils;
+import com.gamja.mippify.compat.SodiumPipelinePatcher;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
@@ -12,10 +13,10 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 
 @SuppressWarnings("ConstantConditions")
-public class PipelineOverrides {
+public class PipelinePatcher {
+    private static final Identifier EMPTY_ID = Identifier.parse("");
     private static final HashMap<Identifier, MutablePipeline> PIPELINE_OVERRIDES = new HashMap<>();
 
-    private static final Identifier EMPTY_ID = Identifier.parse("");
     private static final RenderPipeline.Snippet BLOCK_SNIPPET;
     private static final RenderPipeline.Snippet TERRAIN_SNIPPET;
 
@@ -35,10 +36,10 @@ public class PipelineOverrides {
         TRANSLUCENT_TERRAIN = register(new MutablePipeline(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/translucent_terrain")));
         TRANSLUCENT_BLOCK = register(new MutablePipeline(Identifier.fromNamespaceAndPath(Mippify.MOD_ID, "pipeline/translucent_block")));
 
-        updatePipelines(true);
+        patchPipelines();
     }
 
-    public static MutablePipeline get(Identifier path) {
+    public static RenderPipeline getOverride(Identifier path) {
         return PIPELINE_OVERRIDES.get(path);
     }
 
@@ -51,28 +52,35 @@ public class PipelineOverrides {
         return override;
     }
 
-    public static void updatePipelines(boolean preload) {
-        Mippify.LOGGER.info("*** Updating Pipelines ***");
+    public static float cutoutShaderCutout() {
+        if (Mippify.config() != null && Mippify.config().enableMod && Mippify.config().smoothing) {
+            return 0.1F;
+        }
+        return 0.5F;
+    }
 
-        boolean enabled = !preload && Mippify.config().enableMod && Mippify.config().smoothing;
-        float cutoutFactor = enabled ? 0.1F : 0.5F;
-        float translucentFactor = enabled ? 0.01F : 0.1F;
+    public static float translucentShaderCutout() {
+        if (Mippify.config() != null && Mippify.config().enableMod && Mippify.config().smoothing) {
+            return 0.01F;
+        }
+        return 0.1F;
+    }
 
-        Mippify.LOGGER.info("Smoothing: {}", enabled);
-        Mippify.LOGGER.info("Cutout1: {}", cutoutFactor);
-        Mippify.LOGGER.info("Cutout2: {}", translucentFactor);
+    public static void patchPipelines() {
+        float cutoutShaderCutout = cutoutShaderCutout();
+        float translucentShaderCutout = translucentShaderCutout();
 
         CUTOUT_BLOCK.set(
                 RenderPipeline.builder(BLOCK_SNIPPET)
                         .withLocation(EMPTY_ID)
-                        .withShaderDefine("ALPHA_CUTOUT", cutoutFactor)
+                        .withShaderDefine("ALPHA_CUTOUT", cutoutShaderCutout)
                         .build()
         );
 
         CUTOUT_TERRAIN.set(
                 RenderPipeline.builder(TERRAIN_SNIPPET)
                         .withLocation(EMPTY_ID)
-                        .withShaderDefine("ALPHA_CUTOUT", cutoutFactor)
+                        .withShaderDefine("ALPHA_CUTOUT", cutoutShaderCutout)
                         .build()
         );
 
@@ -80,19 +88,19 @@ public class PipelineOverrides {
                 RenderPipeline.builder(TERRAIN_SNIPPET)
                         .withLocation(EMPTY_ID)
                         .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-                        .withShaderDefine("ALPHA_CUTOUT", translucentFactor)
+                        .withShaderDefine("ALPHA_CUTOUT", translucentShaderCutout)
                         .build()
         );
 
         TRANSLUCENT_BLOCK.set(
                 RenderPipeline.builder(BLOCK_SNIPPET)
                         .withLocation(EMPTY_ID)
-                        .withShaderDefine("ALPHA_CUTOUT", translucentFactor)
+                        .withShaderDefine("ALPHA_CUTOUT", translucentShaderCutout)
                         .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
                         .withDepthStencilState(DepthStencilState.DEFAULT)
                         .build()
         );
 
-        Mippify.LOGGER.info("*** Pipelines Updated ***");
+        SodiumPipelinePatcher.patchPipelines();
     }
 }

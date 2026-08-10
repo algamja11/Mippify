@@ -2,11 +2,13 @@
 	"required": true,
 	"package": "com.gamja.mippify.mixin",
 	"compatibilityLevel": "JAVA_21",
+    "plugin": "com.gamja.mippify.mixin.MippifyMixinPlugins",
 	"mixins": [
       "MixinMinecraft",
       "MixinMipGenerator",
       "MixinPipelines",
-      "MixinShaderManager"
+      "MixinShaderManager",
+      "sodium.MixinSodiumShaders"
 	],
 	"injectors": {
 		"defaultRequire": 1

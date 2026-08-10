@@ -7,11 +7,16 @@ version = "${providers.gradleProperty("mod_version").get()}-${providers.gradlePr
 group = providers.gradleProperty("maven_group").get()
 
 repositories {
+    maven {
+        url = uri("https://api.modrinth.com/maven")
+    }
 }
 
 dependencies {
 	minecraft("com.mojang:minecraft:${providers.gradleProperty("minecraft_version").get()}")
 	implementation("net.fabricmc:fabric-loader:${providers.gradleProperty("loader_version").get()}")
+
+    compileOnly("maven.modrinth:sodium:${providers.gradleProperty("sodium_version").get()}")
 }
 
 tasks.processResources {

@@ -1,5 +1,7 @@
 package com.gamja.mippify;
 
+import com.gamja.mippify.access.Mappings;
+import com.gamja.mippify.access.ReflectionUtils;
 import net.fabricmc.api.ClientModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,5 +20,9 @@ public class Mippify implements ClientModInitializer {
 
     public static MippifyConfig config() {
         return config;
+    }
+
+    public static boolean hasSodium() {
+        return ReflectionUtils.hasClass(Mappings.get("mod.sodium.class.SodiumClientMod"));
     }
 }
