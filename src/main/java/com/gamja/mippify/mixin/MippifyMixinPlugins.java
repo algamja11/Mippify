@@ -1,6 +1,6 @@
 package com.gamja.mippify.mixin;
 
-import com.gamja.mippify.Mippify;
+import com.gamja.mippify.compat.ModCompatManager;
 import java.util.List;
 import java.util.Set;
 import org.objectweb.asm.tree.ClassNode;
@@ -11,7 +11,7 @@ public class MippifyMixinPlugins implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.contains("sodium.")) {
-            return Mippify.hasSodium();
+            return ModCompatManager.hasSodium();
         }
         return true;
     }

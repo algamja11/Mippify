@@ -3,7 +3,9 @@ package com.gamja.mippify.gui;
 import com.gamja.mippify.Lang;
 import com.gamja.mippify.Mippify;
 import com.gamja.mippify.MippifyConfig;
+import com.gamja.mippify.MippifyUtils;
 import java.util.ArrayList;
+import java.util.HashSet;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -18,10 +20,8 @@ public class GuiMippifyConfig extends Screen {
     private final Screen parentGui;
     private final HeaderAndFooterLayout layout;
     private final MippifyConfig config;
-
     private final ArrayList<AbstractWidget> configWidgets = new ArrayList<>();
-
-    private boolean anyChanged = false;
+    private final HashSet<ConfigHandler.Apply> applyActions = new HashSet<>();
 
     public GuiMippifyConfig(Screen parentGui) {
         super(Lang.getComponent("mippify.gui.title"));
@@ -84,12 +84,21 @@ public class GuiMippifyConfig extends Screen {
     @Override
     public void onClose() {
         super.onClose();
-        minecraft.gui.setScreen(parentGui);
-        config.saveAll();
-
-        if (anyChanged) {
-            minecraft.reloadResourcePacks();
+        MippifyUtils.setScreen(parentGui);
+        if (!applyActions.isEmpty()) {
+            config.saveAll();
+            for (ConfigHandler.Apply action : applyActions) {
+                switch (action) {
+                    case ALL -> {
+                        MippifyUtils.reloadResources();
+                        MippifyUtils.flushRenderer();
+                    }
+                    case RELOAD_RESOURCES -> MippifyUtils.reloadResources();
+                    case FLUSH_RENDERER -> MippifyUtils.flushRenderer();
+                }
+            }
         }
+        applyActions.clear();
     }
 
     private void setupConfigs() {
@@ -107,7 +116,7 @@ public class GuiMippifyConfig extends Screen {
                     ConfigHandler.updateConfig(action);
                     button.setMessage(ConfigHandler.getMessage(action));
 
-                    anyChanged = true;
+                    applyActions.add(action.apply());
                 }));
 
             } else if (action.type() == 1) {
@@ -115,7 +124,7 @@ public class GuiMippifyConfig extends Screen {
                     ConfigHandler.updateConfig(action, slider.getValue());
                     slider.setMessage(ConfigHandler.getMessage(action));
 
-                    anyChanged = true;
+                    applyActions.add(action.apply());
                 }));
 
             }

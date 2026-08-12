@@ -34,7 +34,7 @@ public class SodiumPipelinePatcher {
     }
 
     static {
-        if (Mippify.hasSodium()) {
+        if (ModCompatManager.hasSodium()) {
             shadersClass = ShaderChunkRenderer.class;
             createShaderConstants = ReflectionUtils.tryGetMethod(shadersClass, Mappings.get("mod.sodium.method.ShaderChunkRenderer.createShaderConstants"), TerrainRenderPass.class);
             BIND_GROUP = (BindGroupLayout) ReflectionUtils.tryGet(ReflectionUtils.tryGetField(shadersClass, Mappings.get("mod.sodium.field.ShaderChunkRenderer.BIND_GROUP")), null);

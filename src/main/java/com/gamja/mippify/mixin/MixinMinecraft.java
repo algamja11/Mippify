@@ -1,8 +1,8 @@
 package com.gamja.mippify.mixin;
 
 import com.gamja.mippify.Lang;
+import com.gamja.mippify.MippifyUtils;
 import com.gamja.mippify.gui.GuiMippifyConfig;
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.GameLoadCookie;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
@@ -15,9 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinMinecraft {
     @Inject(method = "tick", at = @At("RETURN"))
     private void mippify$tick(CallbackInfo ci) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.gui.screen() == null && InputConstants.isKeyDown(minecraft.getWindow(), GLFW.GLFW_KEY_M)){
-            minecraft.gui.setScreen(new GuiMippifyConfig(null));
+        if (MippifyUtils.getScreen() == null && MippifyUtils.getKeyDown(GLFW.GLFW_KEY_M)){
+            MippifyUtils.setScreen(new GuiMippifyConfig(null));
         }
     }
 

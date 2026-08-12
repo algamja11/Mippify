@@ -8,20 +8,29 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 public class ConfigHandler {
+    public enum Apply {
+        NONE,
+        ALL,
+        RELOAD_RESOURCES,
+        FLUSH_RENDERER
+    }
+
     public enum Action {
-        ENABLE_MOD("mippify.enableMod", 0),
-        SMOOTHING("mippify.smoothing", 0),
-        FAST_EDGE("mippify.fastEdge", 0)
+        ENABLE_MOD("mippify.enableMod", 0, Apply.ALL),
+        SMOOTHING("mippify.smoothing", 0, Apply.ALL),
+        FAST_EDGE("mippify.fastEdge", 0, Apply.RELOAD_RESOURCES)
         ;
 
         private final String key;
         private final String tooltip;
         private final int type;
+        private final Apply apply;
 
-        Action(String key, int type) {
+        Action(String key, int type, Apply apply) {
             this.key = key;
             this.tooltip = key + ".tooltip";
             this.type = type;
+            this.apply = apply;
         }
 
         public String key() {
@@ -34,6 +43,10 @@ public class ConfigHandler {
 
         public int type() {
             return type;
+        }
+
+        public Apply apply() {
+            return apply;
         }
     }
 
